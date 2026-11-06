@@ -16,7 +16,6 @@
 
 @theme inline {
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-wordmark: var(--font-unbounded), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
