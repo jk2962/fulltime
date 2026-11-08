@@ -21,7 +21,10 @@
       "lockedAt": "2026-11-05T20:40:33Z",
       "lockReason": null
     },
-    "result": null,
+    "result": {
+      "home": 3,
+      "away": 1
+    },
     "market": null,
     "scores": null
   },
@@ -47,7 +50,10 @@
       "lockedAt": "2026-11-05T20:40:33Z",
       "lockReason": null
     },
-    "result": null,
+    "result": {
+      "home": 1,
+      "away": 0
+    },
     "market": null,
     "scores": null
   },
@@ -73,7 +79,10 @@
       "lockedAt": "2026-11-05T20:40:33Z",
       "lockReason": null
     },
-    "result": null,
+    "result": {
+      "home": 1,
+      "away": 1
+    },
     "market": null,
     "scores": null
   },
@@ -99,7 +108,10 @@
       "lockedAt": "2026-11-05T20:40:33Z",
       "lockReason": null
     },
-    "result": null,
+    "result": {
+      "home": 1,
+      "away": 0
+    },
     "market": null,
     "scores": null
   },
@@ -125,7 +137,10 @@
       "lockedAt": "2026-11-05T20:40:33Z",
       "lockReason": null
     },
-    "result": null,
+    "result": {
+      "home": 3,
+      "away": 1
+    },
     "market": null,
     "scores": null
   },
