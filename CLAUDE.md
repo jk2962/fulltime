@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-simeon: probabilistic Premier League match forecasts, locked before kickoff and scored (RPS) against the betting market. Two independent parts: a Python pipeline at the repo root and a Next.js site in `web/` that share nothing but the exported JSON.
+Fulltime: probabilistic Premier League match forecasts, locked before kickoff and scored (RPS) against the betting market. Two independent parts: a Python pipeline at the repo root and a Next.js site in `web/` that share nothing but the exported JSON.
 
 ## Commands
 

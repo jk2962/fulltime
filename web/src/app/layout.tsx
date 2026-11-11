@@ -10,8 +10,8 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "Simeon",
-  description: "Weekly football predictions, locked before kickoff and checked against what happened.",
+  title: "Fulltime · Premier League forecasts",
+  description: "Premier League match forecasts, locked before kickoff and scored against the betting market.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

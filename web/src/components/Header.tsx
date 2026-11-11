@@ -40,8 +40,9 @@ export function Header({ current, tab, matchweeks = [] }: { current?: number; ta
         <p className="bg-ink py-1 text-center text-xs font-semibold tracking-widest text-surface">MOCK DATA</p>
       )}
       <div className={`${SHELL} grid grid-cols-[1fr_auto] items-center gap-x-4 lg:grid-cols-[1fr_auto_1fr]`}>
-        <Link href="/" className="justify-self-start py-3 text-xl font-bold tracking-tight">
-          Simeon
+        <Link href="/" className="flex items-baseline gap-2 justify-self-start py-3">
+          <span className="text-xl font-bold tracking-tight">Fulltime</span>
+          <span className="hidden text-sm text-muted sm:inline">Premier League forecasts</span>
         </Link>
 
         {current !== undefined && (

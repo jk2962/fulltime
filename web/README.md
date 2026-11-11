@@ -1,6 +1,6 @@
-# Simeon (web)
+# Fulltime (web)
 
-The website for simeon's forecasts. Self-contained: its own `package.json`, nothing shared with the Python pipeline.
+The website for Fulltime's forecasts. Self-contained: its own `package.json`, nothing shared with the Python pipeline.
 
 ## Run
 

@@ -541,7 +541,7 @@ def score():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="simeon pipeline")
+    parser = argparse.ArgumentParser(description="Fulltime pipeline")
     parser.add_argument("--check", action="store_true", help="load, validate and report")
     parser.add_argument("--backtest", action="store_true", help="holdout sanity check on 2025-26")
     parser.add_argument("--forecast", action="store_true", help="forecast and lock the next round")
