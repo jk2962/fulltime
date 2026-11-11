@@ -271,6 +271,27 @@ cannot affect the scored match forecasts.
     90th percentile of simulated points, inclusive.
   - Also built at this checkpoint, not a model change: the calibration and
     draw-rate diagnostics of point 3, as defined in point 2.
+- **2026-11-10: Round-10 checkpoint outcome: no change. Both candidates
+  rejected.** Evidence from `python -m pipeline.checkpoint dc|sim` at
+  commit 91861df, code committed before either was run.
+  - Candidate A (Dixon-Coles), 760 matches of 2023-24 + 2024-25: RPS
+    difference +0.00000 (0.10 SE); 2023-24 -0.00005, 2024-25 +0.00006.
+    Fitted rho was slightly positive (median +0.034 and +0.007), so the
+    correction lowered predicted draws (21.94% to 21.58%, observed 23.03%).
+    Calibration error 0.0104 to 0.0160 (bootstrap SE of difference 0.0046)
+    and draw-rate gap 0.0109 to 0.0145 (SE 0.0028): both worse by more than
+    one SE. Fails conditions 1, 2 and 4. The 2025-26 holdout was NOT used.
+  - Candidate S (promoted-team simulation prior variance): derived value
+    attack precision 15.4 (SD 0.254), defense 37.3 (SD 0.164), against 3
+    (SD 0.577) now. Leave-one-season-out backtest, 12 snapshots: RPS over
+    positions 0.0819 now, 0.0823 candidate (higher); 80% interval coverage
+    0.667 now, 0.650 candidate (further from 80%). Fails both conditions.
+  - What it shows: the current simulation is already overconfident overall
+    (an 80% interval covers 67% of final points), mostly early in a season
+    (round 6: 45-65%). Narrowing promoted teams makes that worse. The
+    round-10 Hull figure (top four 5.0%) stays a known flaw: too wide for a
+    promoted team while too narrow for the league as a whole. Recorded under
+    Open issues as input for the round-20 checkpoint; not a named candidate.
 
 ## Known divergences from the market reference
 
@@ -290,6 +311,13 @@ of 10 October. The model was NOT adjusted to match them.
   season.
 
 ## Open issues
+
+- **The season simulation's uncertainty has the wrong shape.** Its 80%
+  points intervals covered 67% of outcomes in the round-10 checkpoint
+  backtest (45-65% from round 6), so overall it is too narrow, while a
+  promoted team with few matches gets very wide draws (Hull 5.0% top four
+  before round 10). A likely cause is that strengths are held fixed for the
+  rest of the season. Material for a round-20 candidate.
 
 - **A returning team is still misread before its first match of the
   season.** Until it has played, the latest season in the training data is
