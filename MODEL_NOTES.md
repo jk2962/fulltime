@@ -237,6 +237,40 @@ cannot affect the scored match forecasts.
   season is now computed from the other seasons only (leave-one-season-out).
   As first written, a value derived from 2021-22 to 2024-25 would have been
   tested on those same seasons.
+- **2026-11-10: Round-10 checkpoint opened; candidates named before any
+  backtest was run.** Round 10's scheduled dates have passed; round 11's
+  first kickoff is 2026-11-21 12:30 UTC. One match-model slot is used, one
+  is left empty, and the simulation-only slot takes the candidate named on
+  2026-10-08.
+  - **Match model, candidate A: Dixon-Coles low-score correction.** The four
+    scorelines 0-0, 1-0, 0-1 and 1-1 are multiplied by the Dixon-Coles tau
+    factors with one parameter rho, then the 0-10 grid is renormalized as
+    now. Team parameters stay exactly as the current Poisson fit gives them;
+    rho is estimated by maximum likelihood on the same 730-day window, with
+    the fitted expected goals held fixed, refitted with every refit. Nothing
+    is tuned on the comparison seasons. Judged under point 2.
+  - **Match model, second slot: not used.** Time decay was considered and
+    not named: its decay rate is a new tuned parameter and needs a design
+    that does not choose and judge it on the same seasons. A separate prior
+    strength for promoted teams was not named either: about 30 early-season
+    promoted-team matches cannot reach 2 standard errors.
+  - **Simulation only, candidate S: a promoted-team prior variance for the
+    Laplace draws.** In laplace_covariance, the prior precision on a
+    promoted team's attack deviation is 1 / (variance of promoted teams'
+    first-season attack gaps), and likewise for defense; every other team
+    keeps PRIOR_STRENGTH. The gaps are the ones behind the promoted prior
+    (each promoted team's full-season gap to the established teams, fitted
+    one season at a time), pooled over 2021-22 to 2024-25, variance around
+    their pooled mean (ddof 1). The observed spread includes sampling noise,
+    so if anything it overstates the variance. The fit itself is unchanged.
+    Judged under point 7. Backtest details fixed now: round r of a past
+    season starts at the kickoff of its ((r-1)*10+1)-th match in kickoff
+    order (the results files have no matchday); 10,000 runs, seed 2026, for
+    both versions; RPS over the 20 ordered final positions, averaged over
+    teams and snapshots; 80% interval for final points from the 10th to
+    90th percentile of simulated points, inclusive.
+  - Also built at this checkpoint, not a model change: the calibration and
+    draw-rate diagnostics of point 3, as defined in point 2.
 
 ## Known divergences from the market reference
 
