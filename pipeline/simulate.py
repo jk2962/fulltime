@@ -51,7 +51,7 @@ def current_table(season_df):
     )
 
 
-def laplace_covariance(fitted, train):
+def laplace_covariance(fitted, train, promoted_precision=None):
     """Covariance of the fitted parameters, used to draw them at random.
 
     model.fit returns the MAP estimate: the peak of the posterior under a
@@ -66,6 +66,11 @@ def laplace_covariance(fitted, train):
 
     Returns (teams, covariance). Parameter order: intercept, home advantage,
     one attack per team, one defense per team, with teams in the order given.
+
+    promoted_precision: optional (attack, defense) prior precision for the
+    teams promoted in the current season, replacing PRIOR_STRENGTH for their
+    deviations only (round-10 checkpoint, candidate S). None keeps
+    PRIOR_STRENGTH for every team.
 
     The design matrix X is rebuilt here, the same way as in
     model._fit_penalized, because the fit does not return it. The check
@@ -109,12 +114,18 @@ def laplace_covariance(fitted, train):
                 f"actual {goals[rows].sum():.0f}. The design here no longer matches model.fit."
             )
 
-    penalty = np.r_[0.0, 0.0, np.full(2 * len(teams), model.PRIOR_STRENGTH)]
+    attack_prior = np.full(len(teams), model.PRIOR_STRENGTH)
+    defense_prior = np.full(len(teams), model.PRIOR_STRENGTH)
+    if promoted_precision is not None:
+        promoted = model._promoted_teams(train, train["season"].max())
+        is_promoted = np.array([team in promoted for team in teams])
+        attack_prior[is_promoted], defense_prior[is_promoted] = promoted_precision
+    penalty = np.r_[0.0, 0.0, attack_prior, defense_prior]
     curvature = design.T @ (expected[:, None] * design) + np.diag(penalty)
     return teams, np.linalg.inv(curvature)
 
 
-def simulate_positions(table, fixtures, fitted, teams, deviations, rng):
+def simulate_positions(table, fixtures, fitted, teams, deviations, rng, return_points=False):
     """Play the remaining fixtures once per row of `deviations`.
 
     table: current_table() for the teams of the season.
@@ -123,7 +134,8 @@ def simulate_positions(table, fixtures, fitted, teams, deviations, rng):
     point estimates.
 
     Returns (expected final points per team, DataFrame of finishing-position
-    probabilities: one row per team, columns 1..n_teams).
+    probabilities: one row per team, columns 1..n_teams), plus the simulated
+    final points (n_runs, n_teams; teams in table order) if return_points.
 
     Goals are drawn straight from the two Poisson means, without the 0-10
     grid of model.predict (the grid drops about one scoreline in a million).
@@ -163,6 +175,8 @@ def simulate_positions(table, fixtures, fitted, teams, deviations, rng):
     counts = np.zeros((n_teams, n_teams))
     np.add.at(counts, (order, np.arange(n_teams)[None, :]), 1)
     positions = pd.DataFrame(counts / n_runs, index=names, columns=range(1, n_teams + 1))
+    if return_points:
+        return pd.Series(points.mean(axis=0), index=names), positions, points
     return pd.Series(points.mean(axis=0), index=names), positions
 
 

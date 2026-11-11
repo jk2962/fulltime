@@ -248,8 +248,19 @@ def _promoted_prior(train):
     than the training window, because more promoted teams give a steadier
     average.
     """
-    attack_gaps = []
-    defense_gaps = []
+    gaps = promoted_gaps(train)
+    attack_gaps = [g for a, _ in gaps.values() for g in a]
+    defense_gaps = [g for _, d in gaps.values() for g in d]
+    if not attack_gaps:
+        return None, None
+    return float(np.mean(attack_gaps)), float(np.mean(defense_gaps))
+
+
+def promoted_gaps(train):
+    """{season: (attack gaps, defense gaps)} of each promoted team to the
+    average established team, over every completed season in `train` that
+    has a previous season. See _promoted_prior."""
+    gaps = {}
     for season in sorted(train["season"].unique()):
         matches = train[train["season"] == season]
         if len(matches) != MATCHES_PER_SEASON:
@@ -264,12 +275,11 @@ def _promoted_prior(train):
         _, _, attack, defense = _fit_penalized(matches, no_prior, no_prior, NEAR_ZERO_STRENGTH)
         established_attack = np.mean([attack[team] for team in established])
         established_defense = np.mean([defense[team] for team in established])
-        attack_gaps += [attack[team] - established_attack for team in promoted]
-        defense_gaps += [defense[team] - established_defense for team in promoted]
-
-    if not attack_gaps:
-        return None, None
-    return float(np.mean(attack_gaps)), float(np.mean(defense_gaps))
+        gaps[season] = (
+            [attack[team] - established_attack for team in sorted(promoted)],
+            [defense[team] - established_defense for team in sorted(promoted)],
+        )
+    return gaps
 
 
 def _strength(fitted, team):

@@ -525,6 +525,18 @@ def score():
         print(f"\nMean RPS on the same {len(same)} matches (lower is better)")
         for name in ["model", "naive", "bookmaker"]:
             print(f"  {name:<10} {same[f'rps_{name}'].mean():.4f}")
+    if len(played):
+        # Weekly diagnostics (MODEL_NOTES.md point 3): reported, never acted on.
+        probs, outcomes = played[PROB_COLS].to_numpy(), played["outcome"].to_numpy()
+        count, predicted, observed = scoring.calibration_bins(probs, outcomes)
+        print(f"\nCalibration, home/draw/away pooled ({3 * len(played)} forecasts)")
+        print("  bin        n   predicted  observed")
+        for i in np.flatnonzero(count):
+            print(f"  {i / 10:.1f}-{(i + 1) / 10:.1f}  {count[i]:>4}   {predicted[i]:.3f}      {observed[i]:.3f}")
+        print(f"  calibration error {scoring.calibration_error(probs, outcomes):.4f}")
+        print(
+            f"Draw rate: predicted {probs[:, 1].mean():.3f}, observed {(outcomes == 'D').mean():.3f}"
+        )
     print(f"\nWritten to {path}")
 
 

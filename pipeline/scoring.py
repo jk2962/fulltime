@@ -41,3 +41,36 @@ def rps_many(probs_hda, outcomes):
     # cumulative term is always 1 - 1 = 0, so it is left out.
     cum_diff = np.cumsum(probs - actual, axis=1)[:, :2]
     return (cum_diff**2).sum(axis=1) / 2
+
+
+def _pooled(probs_hda, outcomes):
+    """Every home, draw and away forecast as one (probability, happened) pair."""
+    probs = np.asarray(probs_hda, dtype=float)
+    actual = np.asarray(outcomes)[:, None] == np.array(OUTCOMES)[None, :]
+    return probs.ravel(), actual.ravel().astype(float)
+
+
+def calibration_bins(probs_hda, outcomes, n_bins=10):
+    """(count, mean predicted, observed frequency) per equal-width bin, with
+    home, draw and away forecasts pooled. Empty bins have count 0 and NaNs."""
+    p, hit = _pooled(probs_hda, outcomes)
+    bins = np.minimum((p * n_bins).astype(int), n_bins - 1)  # p = 1.0 goes in the top bin
+    count = np.bincount(bins, minlength=n_bins)
+    with np.errstate(invalid="ignore"):
+        predicted = np.bincount(bins, weights=p, minlength=n_bins) / count
+        observed = np.bincount(bins, weights=hit, minlength=n_bins) / count
+    return count, predicted, observed
+
+
+def calibration_error(probs_hda, outcomes, n_bins=10):
+    """Mean absolute gap between predicted and observed, weighted by bin count
+    (MODEL_NOTES.md, change policy point 2)."""
+    count, predicted, observed = calibration_bins(probs_hda, outcomes, n_bins)
+    used = count > 0
+    return float((count[used] * np.abs(predicted[used] - observed[used])).sum() / count.sum())
+
+
+def draw_rate_gap(probs_hda, outcomes):
+    """Absolute gap between mean predicted draw probability and observed draw rate."""
+    probs = np.asarray(probs_hda, dtype=float)
+    return float(abs(probs[:, 1].mean() - (np.asarray(outcomes) == "D").mean()))

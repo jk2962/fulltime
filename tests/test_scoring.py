@@ -33,3 +33,15 @@ def test_bad_input_raises():
         rps([0.5, 0.2, 0.2], "H")  # does not sum to 1
     with pytest.raises(ValueError):
         rps([1 / 3, 1 / 3, 1 / 3], "X")  # unknown outcome
+
+
+def test_calibration_error_by_hand():
+    from pipeline.scoring import calibration_error, draw_rate_gap
+
+    # Two matches, same forecast. Pooled: 0.5 x2 (bin 5, 1 hit), 0.3 x2 (bin 3,
+    # 1 hit), 0.2 x2 (bin 2, 0 hits). Gaps 0.0, 0.2, 0.2, each bin 2 of 6.
+    probs = [[0.5, 0.3, 0.2], [0.5, 0.3, 0.2]]
+    assert calibration_error(probs, ["H", "D"]) == pytest.approx((0 + 0.2 * 2 + 0.2 * 2) / 6)
+    assert draw_rate_gap(probs, ["H", "D"]) == pytest.approx(0.2)
+    # A certain, correct forecast lands in the top bin and is perfectly calibrated.
+    assert calibration_error([[1.0, 0.0, 0.0]], ["H"]) == pytest.approx(0.0)
